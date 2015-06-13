@@ -1,0 +1,22 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Dimensions for the Artist images -->
+    <dimen name="artist_icon_margin">15dp</dimen>
+    <dimen name="artist_icon_size">100dp</dimen>
+
+    <!-- Dimensions for the Album Art -->
+    <dimen name="album_icon_margin">15dp</dimen>
+    <dimen name="album_icon_size">100dp</dimen>
+
+    <!-- Dimensions for the Artist names -->
+    <dimen name="artist_details_top_margin">25dp</dimen>
+    <dimen name="artist_details_right_margin">5dp</dimen>
+
+    <!-- Dimensions for the Album Art -->
+    <dimen name="album_details_right_margin">25dp</dimen>
+    <dimen name="album_details_top_margin">5dp</dimen>
+
+</resources>

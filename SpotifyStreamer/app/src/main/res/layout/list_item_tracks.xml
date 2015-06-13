@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/imageview_album_art"
+        android:layout_width="@dimen/album_icon_size"
+        android:layout_height="@dimen/album_icon_size"
+        android:layout_margin="@dimen/album_icon_margin"
+        android:contentDescription="@string/album_art" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="?android:listPreferredItemHeight"
+        android:layout_marginRight="@dimen/album_details_right_margin"
+        android:layout_marginTop="@dimen/album_details_top_margin">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/textview_list_item_album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/textview_list_item_track"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"></TextView>
+    </LinearLayout>
+
+
+</LinearLayout>
