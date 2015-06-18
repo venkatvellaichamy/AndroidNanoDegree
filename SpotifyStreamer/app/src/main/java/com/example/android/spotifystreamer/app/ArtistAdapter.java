@@ -19,6 +19,11 @@ import kaaes.spotify.webapi.android.models.Image;
 public class ArtistAdapter extends ArrayAdapter<Artist> {
     Context context;
 
+    static class ViewHolder {
+        public ImageView ArtistImage;
+        public TextView ArtistName;
+    }
+
     public ArtistAdapter(Context context, int resource, int textViewResourceId) {
         super(context, resource, textViewResourceId);
         this.context = context;
@@ -26,17 +31,25 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View ArtistRowView = convertView;
+        if(ArtistRowView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ArtistRowView = inflater.inflate(R.layout.list_item_artist, null);
 
-        View ArtistsListView = inflater.inflate(R.layout.list_item_artist, null);
-        TextView ArtistName = (TextView) ArtistsListView.findViewById(R.id.textview_list_item_artist);
-        ImageView ArtistImage = (ImageView) ArtistsListView.findViewById(R.id.imageview_artist_image);
-
-        Artist artist = this.getItem(position);
-        ArtistName.setText(artist.name);
-        if(artist.images.size() > 0) {
-            Picasso.with(context).load(((Image) (artist.images.toArray())[0]).url).into(ArtistImage);
+            // Configure View Holder
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.ArtistName = (TextView) ArtistRowView.findViewById(R.id.textview_list_item_artist);
+            viewHolder.ArtistImage = (ImageView) ArtistRowView.findViewById(R.id.imageview_artist_image);
+            ArtistRowView.setTag(viewHolder);
         }
-        return ArtistsListView;
+
+        // Fill Data
+        Artist artist = this.getItem(position);
+        ViewHolder holder = (ViewHolder) ArtistRowView.getTag();
+        holder.ArtistName.setText(artist.name);
+        if(artist.images.size() > 0) {
+            Picasso.with(context).load(((Image) (artist.images.toArray())[0]).url).into(holder.ArtistImage);
+        }
+        return ArtistRowView;
     }
 }

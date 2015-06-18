@@ -5,12 +5,16 @@
     android:orientation="horizontal"
     android:weightSum="1">
 
-    <ImageView
-        android:id="@+id/imageview_album_art"
-        android:layout_width="@dimen/album_icon_size"
-        android:layout_height="@dimen/album_icon_size"
-        android:layout_margin="@dimen/album_icon_margin"
-        android:contentDescription="@string/album_art" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imageview_album_art"
+            android:layout_width="@dimen/album_icon_size"
+            android:layout_height="@dimen/album_icon_size"
+            android:layout_margin="@dimen/album_icon_margin"
+            android:contentDescription="@string/album_art" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -11,6 +11,9 @@
     <ListView
         android:id="@+id/listview_artist_top_tracks"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:scrollingCache="false"
+        android:animationCache="false"
+        android:smoothScrollbar="true" />
 
 </RelativeLayout>

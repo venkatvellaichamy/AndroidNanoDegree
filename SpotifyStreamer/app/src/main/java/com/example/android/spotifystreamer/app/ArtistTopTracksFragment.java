@@ -1,8 +1,10 @@
 package com.example.android.spotifystreamer.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,9 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 /**
@@ -46,6 +51,7 @@ public class ArtistTopTracksFragment extends Fragment {
         ListView artistList = (ListView) rootView.findViewById(R.id.listview_artist_top_tracks);
         artistList.setAdapter(mTrackAdapter);
 
+
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             ArtistID = intent.getStringExtra(Intent.EXTRA_TEXT);
             FetchTracks fetchTracks = new FetchTracks();
@@ -58,6 +64,7 @@ public class ArtistTopTracksFragment extends Fragment {
     public class FetchTracks extends AsyncTask<String, Void, List<Track>> {
         String ArtistID;
         Artist artist;
+        Toast toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
         @Override
         protected List<Track> doInBackground(String... params) {
@@ -65,17 +72,48 @@ public class ArtistTopTracksFragment extends Fragment {
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             artist = spotify.getArtist(this.ArtistID);
-            Map<String, Object> country = new HashMap<>();
-            country.put("country", "US");
-            Tracks results = spotify.getArtistTopTrack(this.ArtistID, country);
+            Map<String, Object> parameters = new HashMap<>();
 
-            return results.tracks;
+            SharedPreferences sharedPrefs =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String country = sharedPrefs.getString(
+                    getString(R.string.pref_country_key),
+                    getString(R.string.pref_country_default_value));
+            parameters.put("country", country);
+
+            spotify.getArtistTopTrack(this.ArtistID, parameters, new Callback<Tracks>() {
+                @Override
+                public void success(Tracks tracks, Response response) {
+                    final Tracks trcks = tracks;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showTracks(trcks.tracks);
+                        }
+                    });
+                }
+
+                @Override
+                public void failure(final RetrofitError error) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showError(error.getMessage());
+                        }
+                    });
+                }
+            });
+
+            return null;
         }
 
-        @Override
-        protected void onPostExecute(List<Track> tracks) {
-            Toast toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+        private void showError(String message) {
+            toast.cancel();
+            toast.setText("Error: " + message);
+            toast.show();
+        }
 
+        private void showTracks(List<Track> tracks) {
             if (tracks != null && tracks.size() != 0) {
                 toast.cancel();
                 mTrackAdapter.clear();

@@ -19,6 +19,12 @@ import kaaes.spotify.webapi.android.models.Track;
 public class TrackAdapter extends ArrayAdapter<Track>{
     Context context;
 
+    static class ViewHolder {
+        public ImageView AlbumArt;
+        public TextView TrackName;
+        public TextView AlbumName;
+    }
+
     public TrackAdapter(Context context, int resource, int textViewResourceId) {
         super(context, resource, textViewResourceId);
         this.context = context;
@@ -26,19 +32,28 @@ public class TrackAdapter extends ArrayAdapter<Track>{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View TrackRowView = convertView;
 
-        View TracksListView = inflater.inflate(R.layout.list_item_tracks, null);
-        TextView AlbumName = (TextView) TracksListView.findViewById(R.id.textview_list_item_album);
-        TextView TrackName = (TextView) TracksListView.findViewById(R.id.textview_list_item_track);
-        ImageView AlbumArt = (ImageView) TracksListView.findViewById(R.id.imageview_album_art);
+        if(TrackRowView == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            TrackRowView = inflater.inflate(R.layout.list_item_tracks, null);
 
-        Track track = this.getItem(position);
-        AlbumName.setText(track.album.name);
-        TrackName.setText(track.name);
-        if(track.album.images.size() > 0) {
-            Picasso.with(context).load(((Image) (track.album.images.toArray())[0]).url).into(AlbumArt);
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.AlbumName = (TextView) TrackRowView.findViewById(R.id.textview_list_item_album);
+            viewHolder.TrackName = (TextView) TrackRowView.findViewById(R.id.textview_list_item_track);
+            viewHolder.AlbumArt = (ImageView) TrackRowView.findViewById(R.id.imageview_album_art);
+
+            TrackRowView.setTag(viewHolder);
         }
-        return TracksListView;
+
+        // Fill Data
+        ViewHolder holder = (ViewHolder) TrackRowView.getTag();
+        Track track = this.getItem(position);
+        holder.AlbumName.setText(track.album.name);
+        holder.TrackName.setText(track.name);
+        if(track.album.images.size() > 0) {
+            Picasso.with(context).load(((Image) (track.album.images.toArray())[0]).url).into(holder.AlbumArt);
+        }
+        return TrackRowView;
     }
 }

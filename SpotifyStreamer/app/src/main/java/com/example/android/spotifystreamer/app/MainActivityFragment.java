@@ -21,6 +21,9 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 /**
@@ -28,8 +31,8 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  */
 public class MainActivityFragment extends Fragment {
 
-    ArtistAdapter mArtistAdapter;
     View rootView;
+    ArtistAdapter mArtistAdapter;
 
     public MainActivityFragment() {
     }
@@ -78,38 +81,63 @@ public class MainActivityFragment extends Fragment {
     }
 
     public class FetchArtists extends AsyncTask<String, Void, List<Artist>> {
-        String ArtistName;
+        Toast toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+        String ArtistName = "";
 
         @Override
         protected List<Artist> doInBackground(String... params) {
-            this.ArtistName = params[0];
+            ArtistName = params[0];
 
             try {
                 SpotifyApi api = new SpotifyApi();
                 SpotifyService spotify = api.getService();
-                ArtistsPager results = spotify.searchArtists(this.ArtistName);
 
-                return results.artists.items;
-            }catch (Exception e) {
-                Log.e("", "Could not fetch the Artist: " + this.ArtistName);
+                spotify.searchArtists(ArtistName, new Callback<ArtistsPager>() {
+                    @Override
+                    public void success(ArtistsPager artistsPager, Response response) {
+                        final ArtistsPager mArtistsPager = artistsPager;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showArtists(mArtistsPager.artists.items);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        final RetrofitError mError = error;
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showErrorMessage(mError.getMessage());
+                            }
+                        });
+                    }
+                });
+
+            } catch (Exception e) {
+                Log.e("", "Could not fetch the Artist: " + ArtistName);
             }
 
             return null;
         }
 
-        @Override
-        protected void onPostExecute(List<Artist> Artists) {
-            Toast toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
-
+        private void showArtists(List<Artist> Artists) {
             if (Artists != null && Artists.size() != 0) {
                 toast.cancel();
                 mArtistAdapter.clear();
                 mArtistAdapter.addAll(Artists);
             } else {
                 mArtistAdapter.clear();
-                toast.setText("Could not find Artist: " + this.ArtistName);
+                toast.setText("Could not fetch the Artist: " + ArtistName);
                 toast.show();
             }
+        }
+
+        private void showErrorMessage(String message) {
+            toast.setText("Error: " + message);
+            toast.show();
         }
     }
 }
